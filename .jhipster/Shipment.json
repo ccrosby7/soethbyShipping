@@ -1,0 +1,42 @@
+{
+  "name": "Shipment",
+  "fields": [
+    {
+      "fieldName": "height",
+      "fieldType": "Float"
+    },
+    {
+      "fieldName": "length",
+      "fieldType": "Float"
+    },
+    {
+      "fieldName": "width",
+      "fieldType": "Float"
+    },
+    {
+      "fieldName": "weight",
+      "fieldType": "Float"
+    }
+  ],
+  "relationships": [
+    {
+      "relationshipType": "many-to-one",
+      "otherEntityName": "quote",
+      "otherEntityRelationshipName": "shipment",
+      "relationshipName": "quote",
+      "otherEntityField": "id"
+    }
+  ],
+  "changelogDate": "20200709221736",
+  "entityTableName": "shipment",
+  "dto": "mapstruct",
+  "pagination": "no",
+  "service": "serviceImpl",
+  "jpaMetamodelFiltering": false,
+  "fluentMethods": true,
+  "readOnly": false,
+  "embedded": false,
+  "clientRootFolder": "soethbyShipping",
+  "applications": "*",
+  "microserviceName": "soethbyShipping"
+}
