@@ -1,0 +1,57 @@
+{
+  "name": "Shipment",
+  "fields": [
+    {
+      "fieldName": "height",
+      "fieldType": "Float"
+    },
+    {
+      "fieldName": "length",
+      "fieldType": "Float"
+    },
+    {
+      "fieldName": "width",
+      "fieldType": "Float"
+    },
+    {
+      "fieldName": "weight",
+      "fieldType": "Float"
+    }
+  ],
+  "relationships": [
+    {
+      "relationshipType": "one-to-one",
+      "otherEntityName": "address",
+      "otherEntityRelationshipName": "shipment",
+      "relationshipName": "destination",
+      "otherEntityField": "id",
+      "ownerSide": true
+    },
+    {
+      "relationshipType": "one-to-one",
+      "otherEntityName": "address",
+      "otherEntityRelationshipName": "shipment",
+      "relationshipName": "source",
+      "otherEntityField": "id",
+      "ownerSide": true
+    },
+    {
+      "relationshipType": "one-to-many",
+      "otherEntityName": "quote",
+      "otherEntityRelationshipName": "shipment",
+      "relationshipName": "quote"
+    }
+  ],
+  "changelogDate": "20200709230033",
+  "entityTableName": "shipment",
+  "dto": "mapstruct",
+  "pagination": "no",
+  "service": "serviceImpl",
+  "jpaMetamodelFiltering": false,
+  "fluentMethods": true,
+  "readOnly": false,
+  "embedded": false,
+  "clientRootFolder": "soethbyShipping",
+  "applications": "*",
+  "microserviceName": "soethbyShipping"
+}

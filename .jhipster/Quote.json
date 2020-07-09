@@ -1,0 +1,38 @@
+{
+  "name": "Quote",
+  "fields": [
+    {
+      "fieldName": "provider",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "quote",
+      "fieldType": "Float"
+    },
+    {
+      "fieldName": "duration",
+      "fieldType": "Integer"
+    }
+  ],
+  "relationships": [
+    {
+      "relationshipType": "many-to-one",
+      "otherEntityName": "shipment",
+      "otherEntityRelationshipName": "quote",
+      "relationshipName": "shipment",
+      "otherEntityField": "id"
+    }
+  ],
+  "changelogDate": "20200709230133",
+  "entityTableName": "quote",
+  "dto": "mapstruct",
+  "pagination": "no",
+  "service": "serviceImpl",
+  "jpaMetamodelFiltering": false,
+  "fluentMethods": true,
+  "readOnly": false,
+  "embedded": false,
+  "clientRootFolder": "soethbyShipping",
+  "applications": "*",
+  "microserviceName": "soethbyShipping"
+}
