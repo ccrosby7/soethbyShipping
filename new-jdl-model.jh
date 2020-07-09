@@ -1,0 +1,36 @@
+entity Address {
+	firstName String
+    lastName String
+    streetName String
+    city String
+    state String
+    zip Integer
+}
+
+entity Shipment {
+  height Float
+  length Float
+  width Float
+  weight Float
+}
+
+entity Quote {
+ provider String
+ quote Float
+ duration Integer
+}
+
+
+
+// defining multiple OneToMany relationships with comments
+relationship OneToMany {
+	Quote to Shipment{quote}
+
+}
+
+// Use Data Transfert Objects (DTO)
+dto * with mapstruct
+
+// Set service options to all except few
+service all with serviceImpl except Employee, Job
+
