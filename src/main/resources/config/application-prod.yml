@@ -19,11 +19,12 @@ logging:
     io.github.jhipster: INFO
     com.crosby.soethbyshipping: INFO
 
-management:
-  metrics:
-    export:
-      prometheus:
-        enabled: false
+shipping:
+  providers:
+    json:
+      UPS: "http://localhost:8080/"
+    xml:
+      FEDEX: "http://localhost:9090/"
 
 spring:
   devtools:
