@@ -5,12 +5,8 @@ import com.crosby.soethbyshipping.SoethbyShippingApp;
 import com.crosby.soethbyshipping.domain.Shipment;
 import com.crosby.soethbyshipping.repository.ShipmentRepository;
 import com.crosby.soethbyshipping.service.ShipmentService;
-import com.crosby.soethbyshipping.service.dto.ShipmentDTO;
-import com.crosby.soethbyshipping.service.mapper.ShipmentMapper;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+
 import javax.persistence.EntityManager;
 import java.util.List;
 
@@ -51,9 +48,6 @@ public class ShipmentResourceIT {
 
     @Autowired
     private ShipmentRepository shipmentRepository;
-
-    @Autowired
-    private ShipmentMapper shipmentMapper;
 
     @Autowired
     private ShipmentService shipmentService;
@@ -104,11 +98,9 @@ public class ShipmentResourceIT {
     @Transactional
     public void createShipment() throws Exception {
         int databaseSizeBeforeCreate = shipmentRepository.findAll().size();
-        // Create the Shipment
-        ShipmentDTO shipmentDTO = shipmentMapper.toDto(shipment);
         restShipmentMockMvc.perform(post("/api/shipments")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(shipmentDTO)))
+            .content(TestUtil.convertObjectToJsonBytes(shipment)))
             .andExpect(status().isCreated());
 
         // Validate the Shipment in the database
@@ -128,12 +120,11 @@ public class ShipmentResourceIT {
 
         // Create the Shipment with an existing ID
         shipment.setId(1L);
-        ShipmentDTO shipmentDTO = shipmentMapper.toDto(shipment);
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restShipmentMockMvc.perform(post("/api/shipments")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(shipmentDTO)))
+            .content(TestUtil.convertObjectToJsonBytes(shipment)))
             .andExpect(status().isBadRequest());
 
         // Validate the Shipment in the database
@@ -158,7 +149,7 @@ public class ShipmentResourceIT {
             .andExpect(jsonPath("$.[*].width").value(hasItem(DEFAULT_WIDTH.doubleValue())))
             .andExpect(jsonPath("$.[*].weight").value(hasItem(DEFAULT_WEIGHT.doubleValue())));
     }
-    
+
     @Test
     @Transactional
     public void getShipment() throws Exception {
@@ -200,11 +191,10 @@ public class ShipmentResourceIT {
             .length(UPDATED_LENGTH)
             .width(UPDATED_WIDTH)
             .weight(UPDATED_WEIGHT);
-        ShipmentDTO shipmentDTO = shipmentMapper.toDto(updatedShipment);
 
         restShipmentMockMvc.perform(put("/api/shipments")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(shipmentDTO)))
+            .content(TestUtil.convertObjectToJsonBytes(updatedShipment)))
             .andExpect(status().isOk());
 
         // Validate the Shipment in the database
@@ -222,13 +212,10 @@ public class ShipmentResourceIT {
     public void updateNonExistingShipment() throws Exception {
         int databaseSizeBeforeUpdate = shipmentRepository.findAll().size();
 
-        // Create the Shipment
-        ShipmentDTO shipmentDTO = shipmentMapper.toDto(shipment);
-
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
         restShipmentMockMvc.perform(put("/api/shipments")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(shipmentDTO)))
+            .content(TestUtil.convertObjectToJsonBytes(shipment)))
             .andExpect(status().isBadRequest());
 
         // Validate the Shipment in the database

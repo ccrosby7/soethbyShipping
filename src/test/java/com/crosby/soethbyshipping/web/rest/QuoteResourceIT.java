@@ -5,12 +5,8 @@ import com.crosby.soethbyshipping.SoethbyShippingApp;
 import com.crosby.soethbyshipping.domain.Quote;
 import com.crosby.soethbyshipping.repository.QuoteRepository;
 import com.crosby.soethbyshipping.service.QuoteService;
-import com.crosby.soethbyshipping.service.dto.QuoteDTO;
-import com.crosby.soethbyshipping.service.mapper.QuoteMapper;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+
 import javax.persistence.EntityManager;
 import java.util.List;
 
@@ -48,9 +45,6 @@ public class QuoteResourceIT {
 
     @Autowired
     private QuoteRepository quoteRepository;
-
-    @Autowired
-    private QuoteMapper quoteMapper;
 
     @Autowired
     private QuoteService quoteService;
@@ -100,10 +94,9 @@ public class QuoteResourceIT {
     public void createQuote() throws Exception {
         int databaseSizeBeforeCreate = quoteRepository.findAll().size();
         // Create the Quote
-        QuoteDTO quoteDTO = quoteMapper.toDto(quote);
         restQuoteMockMvc.perform(post("/api/quotes")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(quoteDTO)))
+            .content(TestUtil.convertObjectToJsonBytes(quote)))
             .andExpect(status().isCreated());
 
         // Validate the Quote in the database
@@ -122,12 +115,11 @@ public class QuoteResourceIT {
 
         // Create the Quote with an existing ID
         quote.setId(1L);
-        QuoteDTO quoteDTO = quoteMapper.toDto(quote);
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restQuoteMockMvc.perform(post("/api/quotes")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(quoteDTO)))
+            .content(TestUtil.convertObjectToJsonBytes(quote)))
             .andExpect(status().isBadRequest());
 
         // Validate the Quote in the database
@@ -151,7 +143,7 @@ public class QuoteResourceIT {
             .andExpect(jsonPath("$.[*].quote").value(hasItem(DEFAULT_QUOTE.doubleValue())))
             .andExpect(jsonPath("$.[*].duration").value(hasItem(DEFAULT_DURATION)));
     }
-    
+
     @Test
     @Transactional
     public void getQuote() throws Exception {
@@ -191,11 +183,10 @@ public class QuoteResourceIT {
             .provider(UPDATED_PROVIDER)
             .quote(UPDATED_QUOTE)
             .duration(UPDATED_DURATION);
-        QuoteDTO quoteDTO = quoteMapper.toDto(updatedQuote);
 
         restQuoteMockMvc.perform(put("/api/quotes")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(quoteDTO)))
+            .content(TestUtil.convertObjectToJsonBytes(quote)))
             .andExpect(status().isOk());
 
         // Validate the Quote in the database
@@ -212,13 +203,10 @@ public class QuoteResourceIT {
     public void updateNonExistingQuote() throws Exception {
         int databaseSizeBeforeUpdate = quoteRepository.findAll().size();
 
-        // Create the Quote
-        QuoteDTO quoteDTO = quoteMapper.toDto(quote);
-
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
         restQuoteMockMvc.perform(put("/api/quotes")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(quoteDTO)))
+            .content(TestUtil.convertObjectToJsonBytes(quote)))
             .andExpect(status().isBadRequest());
 
         // Validate the Quote in the database

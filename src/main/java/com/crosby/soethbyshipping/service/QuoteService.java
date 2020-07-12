@@ -1,6 +1,7 @@
 package com.crosby.soethbyshipping.service;
 
 import com.crosby.soethbyshipping.domain.Quote;
+import com.crosby.soethbyshipping.domain.Shipment;
 
 import java.util.List;
 import java.util.Optional;
@@ -44,4 +45,6 @@ public interface QuoteService {
     boolean persist(Long id);
 
     void deleteChain(Long id);
+
+    List<Quote> getQuotesFromProviders(Shipment shipment);
 }

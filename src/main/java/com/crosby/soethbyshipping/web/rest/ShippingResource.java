@@ -1,5 +1,6 @@
 package com.crosby.soethbyshipping.web.rest;
 
+import com.crosby.soethbyshipping.domain.Quote;
 import com.crosby.soethbyshipping.domain.Shipment;
 import com.crosby.soethbyshipping.service.QuoteService;
 import com.crosby.soethbyshipping.service.ShipmentService;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -38,19 +40,19 @@ public class ShippingResource {
 
 
     /**
-     * {@code POST  /quotes} : Create a new quote.
+     * {@code POST  /shipments/:id} : Create a new quote. Booking a shipment
      *
      * @param id the quote to persist.
      * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new quoteDTO, or with status {@code 400 (Bad Request)} if the quote has already an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PostMapping("/quotes/:id")
-    public ResponseEntity<Boolean> persistQuote(@RequestBody Long id) throws URISyntaxException {
+    @PostMapping("/shipments/:id")
+    public ResponseEntity<Boolean> persistQuote(@PathVariable Long id) throws URISyntaxException {
         log.debug("REST request to save Shipment : {}", id);
 
         boolean result = quoteService.persist(id);
         if(result) {
-            return ResponseEntity.created(new URI("/api/quote/" + id))
+            return ResponseEntity.created(new URI("/api/shipments/" + id))
                 .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, String.valueOf(id)))
                 .body(true);
         }
@@ -58,12 +60,12 @@ public class ShippingResource {
     }
 
     /**
-     * {@code DELETE  /quotes/:id} : delete the "id" quote.
+     * {@code DELETE  /quotes/:id} : delete the "id" quote. Removing booked shipment
      *
      * @param id the id of the quoteDTO to delete.
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
-    @DeleteMapping("/quotes/{id}")
+    @DeleteMapping("/shipments/:id")
     public ResponseEntity<Void> deleteQuoteChain(@PathVariable Long id) {
         log.debug("REST request to delete Quote and associated elements : {}", id);
         quoteService.deleteChain(id);
@@ -71,7 +73,7 @@ public class ShippingResource {
     }
 
     /**
-     * {@code GET  /shipments/:id} : get the "id" shipment.
+     * {@code GET  /shipments/:id} : get the "id" shipment and all of it's quotes.
      *
      * @param id the id of the shipmentDTO to retrieve.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the shipmentDTO, or with status {@code 404 (Not Found)}.
@@ -81,6 +83,13 @@ public class ShippingResource {
         log.debug("REST request to get Shipment : {}", id);
         Optional<Shipment> shipment = shipmentService.findOne(id);
         return ResponseUtil.wrapOrNotFound(shipment);
+    }
+
+    @PostMapping("/shipments/requestQuotes")
+    public ResponseEntity<List<Quote>> getQuotes(@RequestBody Shipment shipment){
+        log.debug("REST request to get Quotes for shipment");
+        shipmentService.save(shipment);
+        return ResponseEntity.ok().body(quoteService.getQuotesFromProviders(shipment));
     }
 
 }

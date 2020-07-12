@@ -1,8 +1,13 @@
 package com.crosby.soethbyshipping.service.impl;
 
+import com.crosby.soethbyshipping.config.ShippingConfiguration;
+import com.crosby.soethbyshipping.domain.Shipment;
+import com.crosby.soethbyshipping.enums.ResponseFormat;
 import com.crosby.soethbyshipping.service.QuoteService;
 import com.crosby.soethbyshipping.domain.Quote;
 import com.crosby.soethbyshipping.repository.QuoteRepository;
+import com.crosby.soethbyshipping.service.ShipmentService;
+import com.crosby.soethbyshipping.util.QuoteRequestUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,9 +29,17 @@ public class QuoteServiceImpl implements QuoteService {
     private final Logger log = LoggerFactory.getLogger(QuoteServiceImpl.class);
 
     private final QuoteRepository quoteRepository;
+    private final ShipmentService shipmentService;
 
-    public QuoteServiceImpl(QuoteRepository quoteRepository) {
+    private final ShippingConfiguration shippingConfiguration;
+    private final QuoteRequestUtil quoteRequestUtil;
+
+    public QuoteServiceImpl(QuoteRepository quoteRepository, ShipmentService shipmentService,
+                            ShippingConfiguration shippingConfiguration, QuoteRequestUtil quoteRequestUtil) {
         this.quoteRepository = quoteRepository;
+        this.shipmentService = shipmentService;
+        this.shippingConfiguration = shippingConfiguration;
+        this.quoteRequestUtil = quoteRequestUtil;
     }
 
     @Override
@@ -75,8 +88,20 @@ public class QuoteServiceImpl implements QuoteService {
     public void deleteChain(Long id) {
         var optionalQuote = findOne(id);
         if(optionalQuote.isPresent()){
-            
+            var quoteToDelete = optionalQuote.get();
+            var shipmentToDelete = quoteToDelete.getShipment();
+            shipmentService.delete(shipmentToDelete.getId()); //will purge all data associated to a booked quote
         }
+    }
+
+    @Override
+    public List<Quote> getQuotesFromProviders(Shipment shipment){
+        var jsonUrls = shippingConfiguration.getJson();
+        var xmlUrls = shippingConfiguration.getXML();
+
+        var quotes = quoteRequestUtil.requestQuotes(shipment, jsonUrls, ResponseFormat.JSON);
+        quotes.addAll(quoteRequestUtil.requestQuotes(shipment, xmlUrls, ResponseFormat.XML));
+        return quotes;
     }
 
 }
