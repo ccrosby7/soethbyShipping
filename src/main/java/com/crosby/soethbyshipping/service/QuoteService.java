@@ -1,6 +1,6 @@
 package com.crosby.soethbyshipping.service;
 
-import com.crosby.soethbyshipping.service.dto.QuoteDTO;
+import com.crosby.soethbyshipping.domain.Quote;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,17 +13,17 @@ public interface QuoteService {
     /**
      * Save a quote.
      *
-     * @param quoteDTO the entity to save.
+     * @param quote the entity to save.
      * @return the persisted entity.
      */
-    QuoteDTO save(QuoteDTO quoteDTO);
+    Quote save(Quote quote);
 
     /**
      * Get all the quotes.
      *
      * @return the list of entities.
      */
-    List<QuoteDTO> findAll();
+    List<Quote> findAll();
 
 
     /**
@@ -32,7 +32,7 @@ public interface QuoteService {
      * @param id the id of the entity.
      * @return the entity.
      */
-    Optional<QuoteDTO> findOne(Long id);
+    Optional<Quote> findOne(Long id);
 
     /**
      * Delete the "id" quote.

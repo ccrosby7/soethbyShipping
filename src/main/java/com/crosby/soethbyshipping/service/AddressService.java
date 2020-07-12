@@ -1,6 +1,6 @@
 package com.crosby.soethbyshipping.service;
 
-    import com.crosby.soethbyshipping.service.dto.AddressDTO;
+    import com.crosby.soethbyshipping.domain.Address;
 
     import java.util.List;
     import java.util.Optional;
@@ -13,17 +13,17 @@ public interface AddressService {
     /**
      * Save a quote.
      *
-     * @param AddressDTO the entity to save.
+     * @param Address the entity to save.
      * @return the persisted entity.
      */
-    AddressDTO save(AddressDTO AddressDTO);
+    Address save(Address Address);
 
     /**
      * Get all the Addresss.
      *
      * @return the list of entities.
      */
-    List<AddressDTO> findAll();
+    List<Address> findAll();
 
 
     /**
@@ -32,7 +32,7 @@ public interface AddressService {
      * @param id the id of the entity.
      * @return the entity.
      */
-    Optional<AddressDTO> findOne(Long id);
+    Optional<Address> findOne(Long id);
 
     /**
      * Delete the "id" Address.

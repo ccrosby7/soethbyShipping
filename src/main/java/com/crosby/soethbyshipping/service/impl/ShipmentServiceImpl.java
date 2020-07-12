@@ -1,14 +1,11 @@
 package com.crosby.soethbyshipping.service.impl;
 
 import com.crosby.soethbyshipping.domain.Quote;
-import com.crosby.soethbyshipping.repository.QuoteRepository;
 import com.crosby.soethbyshipping.service.AddressService;
 import com.crosby.soethbyshipping.service.QuoteService;
 import com.crosby.soethbyshipping.service.ShipmentService;
 import com.crosby.soethbyshipping.domain.Shipment;
 import com.crosby.soethbyshipping.repository.ShipmentRepository;
-import com.crosby.soethbyshipping.service.dto.ShipmentDTO;
-import com.crosby.soethbyshipping.service.mapper.ShipmentMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,42 +28,35 @@ public class ShipmentServiceImpl implements ShipmentService {
     private final Logger log = LoggerFactory.getLogger(ShipmentServiceImpl.class);
 
     private final ShipmentRepository shipmentRepository;
-    private final ShipmentMapper shipmentMapper;
     private final QuoteService quoteService;
     private final AddressService addressService;
 
-    public ShipmentServiceImpl(ShipmentRepository shipmentRepository, ShipmentMapper shipmentMapper,
-                               QuoteService quoteService, AddressService addressService) {
+    public ShipmentServiceImpl(ShipmentRepository shipmentRepository, QuoteService quoteService,
+                               AddressService addressService) {
         this.shipmentRepository = shipmentRepository;
-        this.shipmentMapper = shipmentMapper;
         this.quoteService = quoteService;
         this.addressService = addressService;
     }
 
     @Override
-    public ShipmentDTO save(ShipmentDTO shipmentDTO) {
-        log.debug("Request to save Shipment : {}", shipmentDTO);
-        Shipment shipment = shipmentMapper.toEntity(shipmentDTO);
-        shipment = shipmentRepository.save(shipment);
-        return shipmentMapper.toDto(shipment);
+    public Shipment save(Shipment shipment) {
+        log.debug("Request to save Shipment : {}", shipment);
+        return shipmentRepository.save(shipment);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<ShipmentDTO> findAll() {
+    public List<Shipment> findAll() {
         log.debug("Request to get all Shipments");
-        return shipmentRepository.findAll().stream()
-            .map(shipmentMapper::toDto)
-            .collect(Collectors.toCollection(LinkedList::new));
+        return shipmentRepository.findAll().stream().collect(Collectors.toCollection(LinkedList::new));
     }
 
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<ShipmentDTO> findOne(Long id) {
+    public Optional<Shipment> findOne(Long id) {
         log.debug("Request to get Shipment : {}", id);
-        return shipmentRepository.findById(id)
-            .map(shipmentMapper::toDto);
+        return shipmentRepository.findById(id);
     }
 
     @Override

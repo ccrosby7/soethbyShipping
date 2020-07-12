@@ -1,8 +1,9 @@
 package com.crosby.soethbyshipping.web.rest;
 
+import com.crosby.soethbyshipping.domain.Shipment;
 import com.crosby.soethbyshipping.service.QuoteService;
 import com.crosby.soethbyshipping.service.ShipmentService;
-import com.crosby.soethbyshipping.service.dto.ShipmentDTO;
+
 import io.github.jhipster.web.util.HeaderUtil;
 import io.github.jhipster.web.util.ResponseUtil;
 import org.slf4j.Logger;
@@ -29,7 +30,7 @@ public class ShippingResource {
     private final QuoteService quoteService;
     private final ShipmentService shipmentService;
 
-    //unified resource because no point in
+    //unified resource because no point in having split purpose when they're interacting constantly
     public ShippingResource(QuoteService quoteService, ShipmentService shipmentService) {
         this.quoteService = quoteService;
         this.shipmentService = shipmentService;
@@ -76,10 +77,10 @@ public class ShippingResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the shipmentDTO, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/shipments/{id}")
-    public ResponseEntity<ShipmentDTO> getShipment(@PathVariable Long id) {
+    public ResponseEntity<Shipment> getShipment(@PathVariable Long id) {
         log.debug("REST request to get Shipment : {}", id);
-        Optional<ShipmentDTO> shipmentDTO = shipmentService.findOne(id);
-        return ResponseUtil.wrapOrNotFound(shipmentDTO);
+        Optional<Shipment> shipment = shipmentService.findOne(id);
+        return ResponseUtil.wrapOrNotFound(shipment);
     }
 
 }

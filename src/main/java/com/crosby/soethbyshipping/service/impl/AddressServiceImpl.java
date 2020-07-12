@@ -3,8 +3,6 @@ package com.crosby.soethbyshipping.service.impl;
 import com.crosby.soethbyshipping.domain.Address;
 import com.crosby.soethbyshipping.repository.AddressRepository;
 import com.crosby.soethbyshipping.service.AddressService;
-import com.crosby.soethbyshipping.service.dto.AddressDTO;
-import com.crosby.soethbyshipping.service.mapper.AddressMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,24 +25,19 @@ public class AddressServiceImpl implements AddressService {
 
     private final AddressRepository addressRepository;
 
-    private final AddressMapper addressMapper;
-
-    public AddressServiceImpl(AddressRepository addressRepository, AddressMapper addressMapper) {
+    public AddressServiceImpl(AddressRepository addressRepository) {
         this.addressRepository = addressRepository;
-        this.addressMapper = addressMapper;
     }
 
     /**
      * Save a address.
      *
-     * @param addressDTO the entity to save.
+     * @param address the entity to save.
      * @return the persisted entity.
      */
-    public AddressDTO save(AddressDTO addressDTO) {
-        log.debug("Request to save Address : {}", addressDTO);
-        Address address = addressMapper.toEntity(addressDTO);
-        address = addressRepository.save(address);
-        return addressMapper.toDto(address);
+    public Address save(Address address) {
+        log.debug("Request to save Address : {}", address);
+        return addressRepository.save(address);
     }
 
     /**
@@ -53,11 +46,9 @@ public class AddressServiceImpl implements AddressService {
      * @return the list of entities.
      */
     @Transactional(readOnly = true)
-    public List<AddressDTO> findAll() {
+    public List<Address> findAll() {
         log.debug("Request to get all Addresses");
-        return addressRepository.findAll().stream()
-            .map(addressMapper::toDto)
-            .collect(Collectors.toCollection(LinkedList::new));
+        return addressRepository.findAll().stream().collect(Collectors.toCollection(LinkedList::new));
     }
 
 
@@ -68,10 +59,9 @@ public class AddressServiceImpl implements AddressService {
      * @return the entity.
      */
     @Transactional(readOnly = true)
-    public Optional<AddressDTO> findOne(Long id) {
+    public Optional<Address> findOne(Long id) {
         log.debug("Request to get Address : {}", id);
-        return addressRepository.findById(id)
-            .map(addressMapper::toDto);
+        return addressRepository.findById(id);
     }
 
     /**

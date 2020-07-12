@@ -1,6 +1,6 @@
 package com.crosby.soethbyshipping.service;
 
-import com.crosby.soethbyshipping.service.dto.ShipmentDTO;
+import com.crosby.soethbyshipping.domain.Shipment;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,17 +13,17 @@ public interface ShipmentService {
     /**
      * Save a shipment.
      *
-     * @param shipmentDTO the entity to save.
+     * @param shipment the entity to save.
      * @return the persisted entity.
      */
-    ShipmentDTO save(ShipmentDTO shipmentDTO);
+    Shipment save(Shipment shipment);
 
     /**
      * Get all the shipments.
      *
      * @return the list of entities.
      */
-    List<ShipmentDTO> findAll();
+    List<Shipment> findAll();
 
 
     /**
@@ -32,7 +32,7 @@ public interface ShipmentService {
      * @param id the id of the entity.
      * @return the entity.
      */
-    Optional<ShipmentDTO> findOne(Long id);
+    Optional<Shipment> findOne(Long id);
 
     /**
      * Delete the "id" shipment.
