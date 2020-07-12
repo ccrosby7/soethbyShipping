@@ -40,20 +40,21 @@ public class QuoteResource {
     /**
      * {@code POST  /quotes} : Create a new quote.
      *
-     * @param quoteDTO the quoteDTO to create.
+     * @param id the quote to persist.
      * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new quoteDTO, or with status {@code 400 (Bad Request)} if the quote has already an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/quotes")
-    public ResponseEntity<QuoteDTO> createQuote(@RequestBody QuoteDTO quoteDTO) throws URISyntaxException {
-        log.debug("REST request to save Quote : {}", quoteDTO);
-        if (quoteDTO.getId() != null) {
-            throw new BadRequestAlertException("A new quote cannot already have an ID", ENTITY_NAME, "idexists");
+    public ResponseEntity<Boolean> persistQuote(@RequestBody Long id) throws URISyntaxException {
+        log.debug("REST request to save Shipment : {}", id);
+
+        boolean result = quoteService.persist(id);
+        if(result) {
+            return ResponseEntity.created(new URI("/api/quote/" + id))
+                .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, String.valueOf(id)))
+                .body(true);
         }
-        QuoteDTO result = quoteService.save(quoteDTO);
-        return ResponseEntity.created(new URI("/api/quotes/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
-            .body(result);
+        return ResponseEntity.badRequest().build();
     }
 
     /**
@@ -108,8 +109,8 @@ public class QuoteResource {
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
     @DeleteMapping("/quotes/{id}")
-    public ResponseEntity<Void> deleteQuote(@PathVariable Long id) {
-        log.debug("REST request to delete Quote : {}", id);
+    public ResponseEntity<Void> deleteQuoteChain(@PathVariable Long id) {
+        log.debug("REST request to delete Quote and associated elements : {}", id);
         quoteService.delete(id);
         return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
     }

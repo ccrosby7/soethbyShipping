@@ -65,4 +65,16 @@ public class QuoteServiceImpl implements QuoteService {
         log.debug("Request to delete Quote : {}", id);
         quoteRepository.deleteById(id);
     }
+
+    @Override
+    public boolean persist(Long id) {
+        var quoteToPersist = quoteRepository.findById(id);
+        if(quoteToPersist.isPresent()){
+            var quote = quoteToPersist.get();
+            quote.setPersist(true); //flippable?
+            quoteRepository.save(quote);
+        }
+        return false;
+    }
+
 }

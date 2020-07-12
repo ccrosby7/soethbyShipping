@@ -29,6 +29,9 @@ public class Quote implements Serializable {
     @Column(name = "duration")
     private Integer duration;
 
+    @Column(name = "persist")
+    private boolean persist;
+
     @ManyToOne
     @JsonIgnoreProperties(value = "quotes", allowSetters = true)
     private Shipment shipment;
@@ -77,6 +80,14 @@ public class Quote implements Serializable {
         return this;
     }
 
+    public boolean isPersist() {
+        return persist;
+    }
+
+    public void setPersist(boolean persist) {
+        this.persist = persist;
+    }
+
     public void setDuration(Integer duration) {
         this.duration = duration;
     }
@@ -121,4 +132,5 @@ public class Quote implements Serializable {
             ", duration=" + getDuration() +
             "}";
     }
+
 }

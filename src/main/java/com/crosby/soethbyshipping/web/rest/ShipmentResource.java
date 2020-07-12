@@ -37,24 +37,6 @@ public class ShipmentResource {
         this.shipmentService = shipmentService;
     }
 
-    /**
-     * {@code POST  /shipments} : Create a new shipment.
-     *
-     * @param shipmentDTO the shipmentDTO to create.
-     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new shipmentDTO, or with status {@code 400 (Bad Request)} if the shipment has already an ID.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
-     */
-    @PostMapping("/shipments")
-    public ResponseEntity<ShipmentDTO> createShipment(@RequestBody ShipmentDTO shipmentDTO) throws URISyntaxException {
-        log.debug("REST request to save Shipment : {}", shipmentDTO);
-        if (shipmentDTO.getId() != null) {
-            throw new BadRequestAlertException("A new shipment cannot already have an ID", ENTITY_NAME, "idexists");
-        }
-        ShipmentDTO result = shipmentService.save(shipmentDTO);
-        return ResponseEntity.created(new URI("/api/shipments/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
-            .body(result);
-    }
 
     /**
      * {@code PUT  /shipments} : Updates an existing shipment.
