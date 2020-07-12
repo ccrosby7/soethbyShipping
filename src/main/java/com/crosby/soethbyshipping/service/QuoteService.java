@@ -42,4 +42,6 @@ public interface QuoteService {
     void delete(Long id);
 
     boolean persist(Long id);
+
+    void deleteChain(Long id);
 }

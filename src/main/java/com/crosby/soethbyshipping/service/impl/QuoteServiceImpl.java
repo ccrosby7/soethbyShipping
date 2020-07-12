@@ -68,13 +68,25 @@ public class QuoteServiceImpl implements QuoteService {
 
     @Override
     public boolean persist(Long id) {
-        var quoteToPersist = quoteRepository.findById(id);
-        if(quoteToPersist.isPresent()){
-            var quote = quoteToPersist.get();
-            quote.setPersist(true); //flippable?
-            quoteRepository.save(quote);
+        var optionalQuote = quoteRepository.findById(id);
+        if(optionalQuote.isPresent()){
+            var quoteToPersist = optionalQuote.get();
+            var trashQuotes = quoteToPersist.getShipment().getQuotes();
+            trashQuotes.remove(quoteToPersist);
+            trashQuotes.forEach(quote -> delete(quote.getId())); //trash unused quotes so the db doesn't get cluttered
+            quoteToPersist.setPersist(true); //flippable?
+            quoteRepository.save(quoteToPersist);
+            return true;
         }
         return false;
+    }
+
+    @Override
+    public void deleteChain(Long id) {
+        var optionalQuote = quoteRepository.findById(id);
+        if(optionalQuote.isPresent()){
+
+        }
     }
 
 }
