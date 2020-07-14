@@ -9,6 +9,7 @@ import com.crosby.soethbyshipping.repository.ShipmentRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,14 +29,19 @@ public class ShipmentServiceImpl implements ShipmentService {
     private final Logger log = LoggerFactory.getLogger(ShipmentServiceImpl.class);
 
     private final ShipmentRepository shipmentRepository;
-    private final QuoteService quoteService;
     private final AddressService addressService;
 
-    public ShipmentServiceImpl(ShipmentRepository shipmentRepository, QuoteService quoteService,
+    private QuoteService quoteService;
+
+    public ShipmentServiceImpl(ShipmentRepository shipmentRepository,
                                AddressService addressService) {
         this.shipmentRepository = shipmentRepository;
-        this.quoteService = quoteService;
         this.addressService = addressService;
+    }
+
+    @Autowired
+    public void setQuoteService(QuoteService quoteService){
+        this.quoteService = quoteService; //breaks circular dependency
     }
 
     @Override

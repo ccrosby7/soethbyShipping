@@ -28,7 +28,7 @@ public class CacheConfiguration {
     private GitProperties gitProperties;
     private BuildProperties buildProperties;
 
-    @Bean
+    //@Bean
     public javax.cache.configuration.Configuration<Object, Object> jcacheConfiguration(JHipsterProperties jHipsterProperties) {
         MutableConfiguration<Object, Object> jcacheConfig = new MutableConfiguration<>();
 
@@ -65,7 +65,7 @@ public class CacheConfiguration {
         return RedissonConfiguration.fromInstance(Redisson.create(config), jcacheConfig);
     }
 
-    @Bean
+    //@Bean
     public JCacheManagerCustomizer cacheManagerCustomizer(javax.cache.configuration.Configuration<Object, Object> jcacheConfiguration) {
         return cm -> {
             // jhipster-needle-redis-add-entry
@@ -83,17 +83,17 @@ public class CacheConfiguration {
         }
     }
 
-    @Autowired(required = false)
+    //@Autowired(required = false)
     public void setGitProperties(GitProperties gitProperties) {
         this.gitProperties = gitProperties;
     }
 
-    @Autowired(required = false)
+    //@Autowired(required = false)
     public void setBuildProperties(BuildProperties buildProperties) {
         this.buildProperties = buildProperties;
     }
 
-    @Bean
+    //@Bean
     public KeyGenerator keyGenerator() {
         return new PrefixedKeyGenerator(this.gitProperties, this.buildProperties);
     }

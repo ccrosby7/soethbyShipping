@@ -11,6 +11,7 @@ import com.crosby.soethbyshipping.util.QuoteRequestUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,17 +30,21 @@ public class QuoteServiceImpl implements QuoteService {
     private final Logger log = LoggerFactory.getLogger(QuoteServiceImpl.class);
 
     private final QuoteRepository quoteRepository;
-    private final ShipmentService shipmentService;
+    private ShipmentService shipmentService;
 
     private final ShippingConfiguration shippingConfiguration;
     private final QuoteRequestUtil quoteRequestUtil;
 
-    public QuoteServiceImpl(QuoteRepository quoteRepository, ShipmentService shipmentService,
+    public QuoteServiceImpl(QuoteRepository quoteRepository,
                             ShippingConfiguration shippingConfiguration, QuoteRequestUtil quoteRequestUtil) {
         this.quoteRepository = quoteRepository;
-        this.shipmentService = shipmentService;
         this.shippingConfiguration = shippingConfiguration;
         this.quoteRequestUtil = quoteRequestUtil;
+    }
+
+    @Autowired
+    public void setShipmentService(ShipmentService shipmentService) {
+        this.shipmentService = shipmentService;
     }
 
     @Override

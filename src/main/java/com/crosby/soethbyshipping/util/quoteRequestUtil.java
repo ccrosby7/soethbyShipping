@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -21,6 +22,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+@Component
 public class QuoteRequestUtil {
 
     private static final HttpClient httpClient = HttpClient.newBuilder()
@@ -28,13 +30,13 @@ public class QuoteRequestUtil {
         .connectTimeout(Duration.ofSeconds(10))
         .build();
 
-    private final ObjectMapper jsonMapper = new ObjectMapper();
-    private final XmlMapper xmlMapper = new XmlMapper();
+    private static final ObjectMapper jsonMapper = new ObjectMapper();
+    private static final XmlMapper xmlMapper = new XmlMapper();
 
-    private final Logger log = LoggerFactory.getLogger(QuoteRequestUtil.class);
+    private static final Logger log = LoggerFactory.getLogger(QuoteRequestUtil.class);
 
 
-    public List<Quote> requestQuotes(Shipment shipment, Map<String, String> urls, ResponseFormat format) {
+    public static List<Quote> requestQuotes(Shipment shipment, Map<String, String> urls, ResponseFormat format) {
         //could retrieve url from config here, but easier to split by protocol or only send a single provider
         ObjectMapper mapper;
         if(format.JSON.equals(format)){
@@ -67,7 +69,7 @@ public class QuoteRequestUtil {
         return null;
     }
 
-    private CompletableFuture<HttpResponse<String>> httpRequest(String body, String url){
+    private static CompletableFuture<HttpResponse<String>> httpRequest(String body, String url){
 
         HttpRequest request = HttpRequest.newBuilder()
             .GET()
