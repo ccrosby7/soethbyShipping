@@ -80,14 +80,6 @@ public class Quote implements Serializable {
         return this;
     }
 
-    public boolean isPersist() {
-        return persist;
-    }
-
-    public void setPersist(boolean persist) {
-        this.persist = persist;
-    }
-
     public void setDuration(Integer duration) {
         this.duration = duration;
     }
@@ -105,6 +97,19 @@ public class Quote implements Serializable {
         this.shipment = shipment;
     }
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
+
+    public Quote persist(boolean persist){
+        this.persist = persist;
+        return this;
+    }
+
+    public boolean isPersist() {
+        return persist;
+    }
+
+    public void setPersist(boolean persist) {
+        this.persist = persist;
+    }
 
     @Override
     public boolean equals(Object o) {

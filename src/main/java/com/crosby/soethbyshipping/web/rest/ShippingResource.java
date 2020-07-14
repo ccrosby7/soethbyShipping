@@ -32,12 +32,24 @@ public class ShippingResource {
     private final QuoteService quoteService;
     private final ShipmentService shipmentService;
 
-    //unified resource because no point in having split purpose when they're interacting constantly
+    //This kinda violates SOLID, but..
     public ShippingResource(QuoteService quoteService, ShipmentService shipmentService) {
         this.quoteService = quoteService;
         this.shipmentService = shipmentService;
     }
 
+    /**
+     * {@code GET  /shipments/:id} : get the "id" shipment and all of it's quotes.
+     *
+     * @param id the id of the shipmentDTO to retrieve.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the shipmentDTO, or with status {@code 404 (Not Found)}.
+     */
+    @GetMapping("/shipments/{id}")
+    public ResponseEntity<Shipment> getShipment(@PathVariable Long id) {
+        log.debug("REST request to get Shipment : {}", id);
+        Optional<Shipment> shipment = shipmentService.findOne(id);
+        return ResponseUtil.wrapOrNotFound(shipment);
+    }
 
     /**
      * {@code POST  /shipments/:id} : Create a new quote. Booking a shipment
@@ -46,7 +58,7 @@ public class ShippingResource {
      * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new quoteDTO, or with status {@code 400 (Bad Request)} if the quote has already an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PostMapping("/shipments/:id")
+    @PostMapping("/shipments/persist/:id")
     public ResponseEntity<Boolean> persistQuote(@PathVariable Long id) throws URISyntaxException {
         log.debug("REST request to save Shipment : {}", id);
 
@@ -70,19 +82,6 @@ public class ShippingResource {
         log.debug("REST request to delete Quote and associated elements : {}", id);
         quoteService.deleteChain(id);
         return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
-    }
-
-    /**
-     * {@code GET  /shipments/:id} : get the "id" shipment and all of it's quotes.
-     *
-     * @param id the id of the shipmentDTO to retrieve.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the shipmentDTO, or with status {@code 404 (Not Found)}.
-     */
-    @GetMapping("/shipments/{id}")
-    public ResponseEntity<Shipment> getShipment(@PathVariable Long id) {
-        log.debug("REST request to get Shipment : {}", id);
-        Optional<Shipment> shipment = shipmentService.findOne(id);
-        return ResponseUtil.wrapOrNotFound(shipment);
     }
 
     @PostMapping("/shipments/requestQuotes")
