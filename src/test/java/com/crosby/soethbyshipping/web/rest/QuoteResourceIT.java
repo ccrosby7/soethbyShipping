@@ -2,9 +2,14 @@ package com.crosby.soethbyshipping.web.rest;
 
 import com.crosby.soethbyshipping.RedisTestContainerExtension;
 import com.crosby.soethbyshipping.SoethbyShippingApp;
+import com.crosby.soethbyshipping.domain.Address;
 import com.crosby.soethbyshipping.domain.Quote;
+import com.crosby.soethbyshipping.domain.Shipment;
 import com.crosby.soethbyshipping.repository.QuoteRepository;
+import com.crosby.soethbyshipping.repository.ShipmentRepository;
 import com.crosby.soethbyshipping.service.QuoteService;
+import com.crosby.soethbyshipping.service.ShipmentService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,14 +39,56 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WithMockUser
 public class QuoteResourceIT {
 
-    private static final String DEFAULT_PROVIDER = "AAAAAAAAAA";
-    private static final String UPDATED_PROVIDER = "BBBBBBBBBB";
+    private static final Float DEFAULT_HEIGHT = 1F;
+    private static final Float UPDATED_HEIGHT = 2F;
+
+    private static final Float DEFAULT_LENGTH = 1F;
+    private static final Float UPDATED_LENGTH = 2F;
+
+    private static final Float DEFAULT_WIDTH = 1F;
+    private static final Float UPDATED_WIDTH = 2F;
+
+    private static final Float DEFAULT_WEIGHT = 1F;
+    private static final Float UPDATED_WEIGHT = 2F;
 
     private static final Float DEFAULT_QUOTE = 1F;
     private static final Float UPDATED_QUOTE = 2F;
 
-    private static final Integer DEFAULT_DURATION = 1;
-    private static final Integer UPDATED_DURATION = 2;
+    private static final Integer DEFAULT_DURATION_IN_DAYS = 1;
+    private static final Integer UPDATED_DURATION_IN_DAYS = 2;
+
+    private static final String DEFAULT_PROVIDER = "UPS";
+    private static final String UPDATED_PROVIDER = "FEDEX";
+
+    private static final boolean DEFAULT_PERSIST = false;
+    private static final boolean UPDATED_PERSIST = true;
+
+    private static final String DEFAULT_CITY = "AAAAA";
+    private static final String UPDATED_CITY = "BBBBB";
+
+    private static final Integer DEFAULT_ZIP = 11111;
+    private static final Integer UPDATED_ZIP = 22222;
+
+    private static final String DEFAULT_STREET_ADDRESS = "AAAAA";
+    private static final String UPDATED_STREET_ADDRESS = "BBBBB";
+
+    private static final String DEFAULT_FIRST_NAME = "AAAAA";
+    private static final String UPDATED_FIRST_NAME = "BBBBB";
+
+    private static final String DEFAULT_LAST_NAME = "AAAAA";
+    private static final String UPDATED_LAST_NAME = "BBBBB";
+
+    @Autowired
+    private ShipmentRepository shipmentRepository;
+
+    @Autowired
+    private ShipmentService shipmentService;
+
+    @Autowired
+    private EntityManager em;
+
+    @Autowired
+    private MockMvc restShipmentMockMvc;
 
     @Autowired
     private QuoteRepository quoteRepository;
@@ -50,12 +97,9 @@ public class QuoteResourceIT {
     private QuoteService quoteService;
 
     @Autowired
-    private EntityManager em;
-
-    @Autowired
     private MockMvc restQuoteMockMvc;
 
-    private Quote quote;
+    private Shipment shipment;
 
     /**
      * Create an entity for this test.
@@ -63,12 +107,37 @@ public class QuoteResourceIT {
      * This is a static method, as tests for other entities might also need it,
      * if they test an entity which requires the current entity.
      */
-    public static Quote createEntity(EntityManager em) {
+    public static Shipment createEntity(EntityManager em) {
+        Shipment shipment = new Shipment()
+            .height(DEFAULT_HEIGHT)
+            .length(DEFAULT_LENGTH)
+            .width(DEFAULT_WIDTH)
+            .weight(DEFAULT_WEIGHT);
+        Shipment shipmentWithQuote = shipment.addQuote(createQuote(shipment));
+        shipment.setDestination(createAddress());
+        shipment.setSource(createAddress());
+        return shipmentWithQuote;
+    }
+
+    public static Quote createQuote(Shipment shipment){
         Quote quote = new Quote()
-            .provider(DEFAULT_PROVIDER)
+            .shipment(shipment)
             .quote(DEFAULT_QUOTE)
-            .duration(DEFAULT_DURATION);
+            .duration(DEFAULT_DURATION_IN_DAYS)
+            .provider(DEFAULT_PROVIDER)
+            .persist(DEFAULT_PERSIST);
         return quote;
+    }
+
+    public static Address createAddress(){
+        var address = new Address()
+            .city(DEFAULT_CITY)
+            .firstName(DEFAULT_FIRST_NAME)
+            .lastName(DEFAULT_LAST_NAME)
+            .streetName(DEFAULT_STREET_ADDRESS)
+            .zip(DEFAULT_ZIP);
+
+        return address;
     }
     /**
      * Create an updated entity for this test.
@@ -76,64 +145,49 @@ public class QuoteResourceIT {
      * This is a static method, as tests for other entities might also need it,
      * if they test an entity which requires the current entity.
      */
-    public static Quote createUpdatedEntity(EntityManager em) {
+    public static Shipment createUpdatedEntity(EntityManager em) {
+        Shipment shipment = new Shipment()
+            .height(UPDATED_HEIGHT)
+            .length(UPDATED_LENGTH)
+            .width(UPDATED_WIDTH)
+            .weight(UPDATED_WEIGHT);
+        Shipment shipmentWithQuote = shipment.addQuote(createUpdatedQuote(shipment));
+        return shipmentWithQuote;
+    }
+
+    public static Quote createUpdatedQuote(Shipment shipment){
         Quote quote = new Quote()
-            .provider(UPDATED_PROVIDER)
+            .shipment(shipment)
             .quote(UPDATED_QUOTE)
-            .duration(UPDATED_DURATION);
+            .duration(UPDATED_DURATION_IN_DAYS)
+            .provider(UPDATED_PROVIDER)
+            .persist(UPDATED_PERSIST);
         return quote;
+    }
+
+    public static Address createUpdatedAddress(){
+        var address = new Address()
+            .city(UPDATED_CITY)
+            .firstName(UPDATED_FIRST_NAME)
+            .lastName(UPDATED_LAST_NAME)
+            .streetName(UPDATED_STREET_ADDRESS)
+            .zip(UPDATED_ZIP);
+
+        return address;
     }
 
     @BeforeEach
     public void initTest() {
-        quote = createEntity(em);
+        shipment = createEntity(em);
     }
 
-    @Test
-    @Transactional
-    public void createQuote() throws Exception {
-        int databaseSizeBeforeCreate = quoteRepository.findAll().size();
-        // Create the Quote
-        restQuoteMockMvc.perform(post("/api/quotes")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(quote)))
-            .andExpect(status().isCreated());
-
-        // Validate the Quote in the database
-        List<Quote> quoteList = quoteRepository.findAll();
-        assertThat(quoteList).hasSize(databaseSizeBeforeCreate + 1);
-        Quote testQuote = quoteList.get(quoteList.size() - 1);
-        assertThat(testQuote.getProvider()).isEqualTo(DEFAULT_PROVIDER);
-        assertThat(testQuote.getQuote()).isEqualTo(DEFAULT_QUOTE);
-        assertThat(testQuote.getDuration()).isEqualTo(DEFAULT_DURATION);
-    }
-
-    @Test
-    @Transactional
-    public void createQuoteWithExistingId() throws Exception {
-        int databaseSizeBeforeCreate = quoteRepository.findAll().size();
-
-        // Create the Quote with an existing ID
-        quote.setId(1L);
-
-        // An entity with an existing ID cannot be created, so this API call must fail
-        restQuoteMockMvc.perform(post("/api/quotes")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(quote)))
-            .andExpect(status().isBadRequest());
-
-        // Validate the Quote in the database
-        List<Quote> quoteList = quoteRepository.findAll();
-        assertThat(quoteList).hasSize(databaseSizeBeforeCreate);
-    }
-
-
-    @Test
+        @Test
     @Transactional
     public void getAllQuotes() throws Exception {
         // Initialize the database
-        quoteRepository.saveAndFlush(quote);
+        shipmentRepository.saveAndFlush(shipment);
 
+        var quote = shipment.getQuotes().iterator().next();
         // Get all the quoteList
         restQuoteMockMvc.perform(get("/api/quotes?sort=id,desc"))
             .andExpect(status().isOk())
@@ -141,15 +195,16 @@ public class QuoteResourceIT {
             .andExpect(jsonPath("$.[*].id").value(hasItem(quote.getId().intValue())))
             .andExpect(jsonPath("$.[*].provider").value(hasItem(DEFAULT_PROVIDER)))
             .andExpect(jsonPath("$.[*].quote").value(hasItem(DEFAULT_QUOTE.doubleValue())))
-            .andExpect(jsonPath("$.[*].duration").value(hasItem(DEFAULT_DURATION)));
+            .andExpect(jsonPath("$.[*].duration").value(hasItem(DEFAULT_DURATION_IN_DAYS)));
     }
 
     @Test
     @Transactional
     public void getQuote() throws Exception {
         // Initialize the database
-        quoteRepository.saveAndFlush(quote);
+        shipmentRepository.saveAndFlush(shipment);
 
+        var quote = shipment.getQuotes().iterator().next();
         // Get the quote
         restQuoteMockMvc.perform(get("/api/quotes/{id}", quote.getId()))
             .andExpect(status().isOk())
@@ -157,7 +212,8 @@ public class QuoteResourceIT {
             .andExpect(jsonPath("$.id").value(quote.getId().intValue()))
             .andExpect(jsonPath("$.provider").value(DEFAULT_PROVIDER))
             .andExpect(jsonPath("$.quote").value(DEFAULT_QUOTE.doubleValue()))
-            .andExpect(jsonPath("$.duration").value(DEFAULT_DURATION));
+            .andExpect(jsonPath("$.duration").value(DEFAULT_DURATION_IN_DAYS));
+        
     }
     @Test
     @Transactional
@@ -167,46 +223,15 @@ public class QuoteResourceIT {
             .andExpect(status().isNotFound());
     }
 
-    @Test
-    @Transactional
-    public void updateQuote() throws Exception {
-        // Initialize the database
-        quoteRepository.saveAndFlush(quote);
-
-        int databaseSizeBeforeUpdate = quoteRepository.findAll().size();
-
-        // Update the quote
-        Quote updatedQuote = quoteRepository.findById(quote.getId()).get();
-        // Disconnect from session so that the updates on updatedQuote are not directly saved in db
-        em.detach(updatedQuote);
-        updatedQuote
-            .provider(UPDATED_PROVIDER)
-            .quote(UPDATED_QUOTE)
-            .duration(UPDATED_DURATION);
-
-        restQuoteMockMvc.perform(put("/api/quotes")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(quote)))
-            .andExpect(status().isOk());
-
-        // Validate the Quote in the database
-        List<Quote> quoteList = quoteRepository.findAll();
-        assertThat(quoteList).hasSize(databaseSizeBeforeUpdate);
-        Quote testQuote = quoteList.get(quoteList.size() - 1);
-        assertThat(testQuote.getProvider()).isEqualTo(UPDATED_PROVIDER);
-        assertThat(testQuote.getQuote()).isEqualTo(UPDATED_QUOTE);
-        assertThat(testQuote.getDuration()).isEqualTo(UPDATED_DURATION);
-    }
 
     @Test
     @Transactional
-    public void updateNonExistingQuote() throws Exception {
+    public void persistNonExistingQuote() throws Exception {
         int databaseSizeBeforeUpdate = quoteRepository.findAll().size();
+        int outOfBoundsId = databaseSizeBeforeUpdate++;
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
-        restQuoteMockMvc.perform(put("/api/quotes")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(quote)))
+        restQuoteMockMvc.perform(put("/api/quotes/persist/{id}", outOfBoundsId))
             .andExpect(status().isBadRequest());
 
         // Validate the Quote in the database
@@ -218,7 +243,9 @@ public class QuoteResourceIT {
     @Transactional
     public void deleteQuote() throws Exception {
         // Initialize the database
-        quoteRepository.saveAndFlush(quote);
+        shipmentRepository.saveAndFlush(shipment);
+
+        var quote = shipment.getQuotes().iterator().next();
 
         int databaseSizeBeforeDelete = quoteRepository.findAll().size();
 
@@ -231,4 +258,20 @@ public class QuoteResourceIT {
         List<Quote> quoteList = quoteRepository.findAll();
         assertThat(quoteList).hasSize(databaseSizeBeforeDelete - 1);
     }
+
+//    @Test
+//    @Transactional
+//    //requires https://github.com/gzurowski/mountebank-shipping
+//    public void getQuotes(EntityManager em) throws Exception {
+//        int databaseSizeBeforeDelete = quoteRepository.findAll().size();
+//        ObjectMapper mapper = new ObjectMapper();
+//
+//        restQuoteMockMvc.perform(post("/quotes/requestQuotes")
+//            .contentType(MediaType.APPLICATION_JSON)
+//            .content(mapper.writeValueAsString(shipment)))
+//            .andExpect(status().isOk());
+//
+//        assertThat(quoteRepository.findAll().size()).isGreaterThan(databaseSizeBeforeDelete);
+//
+//    }
 }
