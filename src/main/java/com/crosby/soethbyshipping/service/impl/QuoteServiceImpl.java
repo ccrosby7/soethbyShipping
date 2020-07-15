@@ -33,13 +33,11 @@ public class QuoteServiceImpl implements QuoteService {
     private ShipmentService shipmentService;
 
     private final ShippingConfiguration shippingConfiguration;
-    private final QuoteRequestUtil quoteRequestUtil;
 
     public QuoteServiceImpl(QuoteRepository quoteRepository,
-                            ShippingConfiguration shippingConfiguration, QuoteRequestUtil quoteRequestUtil) {
+                            ShippingConfiguration shippingConfiguration) {
         this.quoteRepository = quoteRepository;
         this.shippingConfiguration = shippingConfiguration;
-        this.quoteRequestUtil = quoteRequestUtil;
     }
 
     @Autowired
@@ -104,8 +102,8 @@ public class QuoteServiceImpl implements QuoteService {
         var jsonUrls = shippingConfiguration.getJson();
         var xmlUrls = shippingConfiguration.getXML();
 
-        var quotes = quoteRequestUtil.requestQuotes(shipment, jsonUrls, ResponseFormat.JSON);
-        quotes.addAll(quoteRequestUtil.requestQuotes(shipment, xmlUrls, ResponseFormat.XML));
+        var quotes = QuoteRequestUtil.requestQuotes(shipment, jsonUrls, ResponseFormat.JSON);
+        quotes.addAll(QuoteRequestUtil.requestQuotes(shipment, xmlUrls, ResponseFormat.XML));
         return quotes;
     }
 

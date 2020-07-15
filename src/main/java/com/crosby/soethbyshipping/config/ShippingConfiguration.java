@@ -5,6 +5,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Configuration;
 
 import java.util.HashMap;
+import java.util.Map;
 
 @Configuration
 @EnableConfigurationProperties
@@ -13,10 +14,10 @@ public class ShippingConfiguration {
     private HashMap<String, String> json;
     private HashMap<String, String> xml;
 
-    public HashMap<String, String> getJson() {
+    public Map<String, String> getJson() {
         return json;
     }
-    public HashMap<String, String> getXML() {
+    public Map<String, String> getXML() {
         return xml;
     }
 

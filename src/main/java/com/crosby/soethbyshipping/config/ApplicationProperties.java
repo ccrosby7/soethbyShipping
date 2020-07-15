@@ -1,7 +1,6 @@
 package com.crosby.soethbyshipping.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.scheduling.annotation.Scheduled;
 
 /**
  * Properties specific to Soethby Shipping.

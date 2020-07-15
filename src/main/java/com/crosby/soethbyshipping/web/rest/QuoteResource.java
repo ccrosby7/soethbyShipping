@@ -4,7 +4,6 @@ import com.crosby.soethbyshipping.domain.Quote;
 import com.crosby.soethbyshipping.domain.Shipment;
 import com.crosby.soethbyshipping.service.QuoteService;
 import com.crosby.soethbyshipping.service.ShipmentService;
-import com.crosby.soethbyshipping.web.rest.errors.BadRequestAlertException;
 
 import io.github.jhipster.web.util.HeaderUtil;
 import io.github.jhipster.web.util.ResponseUtil;
@@ -42,12 +41,12 @@ public class QuoteResource {
     }
 
     /**
-     * {@code GET  /quotes/:id} : get the "id" quote.
+     * {@code GET  /quote/:id} : get the "id" quote.
      *
      * @param id the id of the quote to retrieve.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the quote, or with status {@code 404 (Not Found)}.
      */
-    @GetMapping("/quotes/:id")
+    @GetMapping("/quote/{id}")
     public ResponseEntity<Quote> getQuote(@PathVariable Long id) {
         log.debug("REST request to get Quote : {}", id);
         Optional<Quote> quote = quoteService.findOne(id);
@@ -56,12 +55,12 @@ public class QuoteResource {
 
 
     /**
-     * {@code DELETE  /quotes/:id} : delete the "id" quote. Removing booked shipment
+     * {@code DELETE  /quote/:id} : delete the "id" quote. Removing booked shipment
      *
      * @param id the id of the quote to delete.
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
-    @DeleteMapping("/quote/:id")
+    @DeleteMapping("/quote/{id}")
     public ResponseEntity<Void> deleteQuoteChain(@PathVariable Long id) {
         log.debug("REST request to delete Quote and associated elements : {}", id);
         quoteService.deleteChain(id);
@@ -75,7 +74,7 @@ public class QuoteResource {
      * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the id of the persisted quote, or with status {@code 400 (Bad Request)} if the quote does not exist.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PutMapping("/quote/persist/:id")
+    @PutMapping("/quote/persist/{id}")
     public ResponseEntity<Boolean> persistQuote(@PathVariable Long id) throws URISyntaxException {
         log.debug("REST request to save Shipment : {}", id);
 
@@ -85,12 +84,12 @@ public class QuoteResource {
                 .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, String.valueOf(id)))
                 .body(true);
         }
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.notFound().build();
     }
 
 
 
-    @PostMapping("/quotes/requestQuotes")
+    @PostMapping("/quote/requestQuotes")
     public ResponseEntity<List<Quote>> getQuotes(@RequestBody Shipment shipment){
         log.debug("REST request to get Quotes for shipment");
         shipmentService.save(shipment);

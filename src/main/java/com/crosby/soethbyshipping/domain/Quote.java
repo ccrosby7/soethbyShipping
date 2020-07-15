@@ -23,8 +23,8 @@ public class Quote implements Serializable {
     @Column(name = "provider")
     private String provider;
 
-    @Column(name = "quote")
-    private Float quote;
+    @Column(name = "price")
+    private Float price;
 
     @Column(name = "duration")
     private Integer duration;
@@ -32,7 +32,7 @@ public class Quote implements Serializable {
     @Column(name = "persist")
     private boolean persist;
 
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.ALL})
     @JsonIgnoreProperties(value = "quotes", allowSetters = true)
     private Shipment shipment;
 
@@ -58,17 +58,17 @@ public class Quote implements Serializable {
         this.provider = provider;
     }
 
-    public Float getQuote() {
-        return quote;
+    public Float getPrice() {
+        return price;
     }
 
     public Quote quote(Float quote) {
-        this.quote = quote;
+        this.price = quote;
         return this;
     }
 
-    public void setQuote(Float quote) {
-        this.quote = quote;
+    public void setPrice(Float price) {
+        this.price = price;
     }
 
     public Integer getDuration() {
@@ -133,7 +133,7 @@ public class Quote implements Serializable {
         return "Quote{" +
             "id=" + getId() +
             ", provider='" + getProvider() + "'" +
-            ", quote=" + getQuote() +
+            ", quote=" + getPrice() +
             ", duration=" + getDuration() +
             "}";
     }

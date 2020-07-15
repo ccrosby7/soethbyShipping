@@ -19,6 +19,13 @@ logging:
     io.github.jhipster: DEBUG
     com.crosby.soethbyshipping: DEBUG
 
+shipping:
+  providers:
+    json:
+      UPS: "http://localhost:8080/"
+    xml:
+      FEDEX: "http://localhost:9090/"
+
 spring:
   profiles:
     active: dev

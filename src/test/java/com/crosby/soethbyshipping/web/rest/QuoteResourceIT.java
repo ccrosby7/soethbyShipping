@@ -177,62 +177,45 @@ public class QuoteResourceIT {
     }
 
     @BeforeEach
-    public void initTest() {
+    void initTest() {
         shipment = createEntity(em);
-    }
-
-        @Test
-    @Transactional
-    public void getAllQuotes() throws Exception {
-        // Initialize the database
-        shipmentRepository.saveAndFlush(shipment);
-
-        var quote = shipment.getQuotes().iterator().next();
-        // Get all the quoteList
-        restQuoteMockMvc.perform(get("/api/quotes?sort=id,desc"))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(quote.getId().intValue())))
-            .andExpect(jsonPath("$.[*].provider").value(hasItem(DEFAULT_PROVIDER)))
-            .andExpect(jsonPath("$.[*].quote").value(hasItem(DEFAULT_QUOTE.doubleValue())))
-            .andExpect(jsonPath("$.[*].duration").value(hasItem(DEFAULT_DURATION_IN_DAYS)));
     }
 
     @Test
     @Transactional
-    public void getQuote() throws Exception {
+    void getQuote() throws Exception {
         // Initialize the database
         shipmentRepository.saveAndFlush(shipment);
 
         var quote = shipment.getQuotes().iterator().next();
         // Get the quote
-        restQuoteMockMvc.perform(get("/api/quotes/{id}", quote.getId()))
+        restQuoteMockMvc.perform(get("/api/quote/{id}", quote.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(quote.getId().intValue()))
             .andExpect(jsonPath("$.provider").value(DEFAULT_PROVIDER))
             .andExpect(jsonPath("$.quote").value(DEFAULT_QUOTE.doubleValue()))
             .andExpect(jsonPath("$.duration").value(DEFAULT_DURATION_IN_DAYS));
-        
+
     }
     @Test
     @Transactional
-    public void getNonExistingQuote() throws Exception {
+    void getNonExistingQuote() throws Exception {
         // Get the quote
-        restQuoteMockMvc.perform(get("/api/quotes/{id}", Long.MAX_VALUE))
+        restQuoteMockMvc.perform(get("/api/quote/{id}", Long.MAX_VALUE))
             .andExpect(status().isNotFound());
     }
 
 
     @Test
     @Transactional
-    public void persistNonExistingQuote() throws Exception {
+    void persistNonExistingQuote() throws Exception {
         int databaseSizeBeforeUpdate = quoteRepository.findAll().size();
-        int outOfBoundsId = databaseSizeBeforeUpdate++;
+        int outOfBoundsId = databaseSizeBeforeUpdate+1;
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
-        restQuoteMockMvc.perform(put("/api/quotes/persist/{id}", outOfBoundsId))
-            .andExpect(status().isBadRequest());
+        restQuoteMockMvc.perform(put("/api/quote/persist/{id}", outOfBoundsId))
+            .andExpect(status().isNotFound());
 
         // Validate the Quote in the database
         List<Quote> quoteList = quoteRepository.findAll();
@@ -241,18 +224,18 @@ public class QuoteResourceIT {
 
     @Test
     @Transactional
-    public void deleteQuote() throws Exception {
+    void deleteQuote() throws Exception {
         // Initialize the database
         shipmentRepository.saveAndFlush(shipment);
 
+        List<Shipment> shipment1 = shipmentRepository.findAll();
         var quote = shipment.getQuotes().iterator().next();
 
         int databaseSizeBeforeDelete = quoteRepository.findAll().size();
 
         // Delete the quote
-        restQuoteMockMvc.perform(delete("/api/quotes/{id}", quote.getId())
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isNoContent());
+        restQuoteMockMvc.perform(delete("/api/quote/{id}", quote.getId()))
+        .andExpect(status().isNoContent());
 
         // Validate the database contains one less item
         List<Quote> quoteList = quoteRepository.findAll();
@@ -262,8 +245,8 @@ public class QuoteResourceIT {
 //    @Test
 //    @Transactional
 //    //requires https://github.com/gzurowski/mountebank-shipping
-//    public void getQuotes(EntityManager em) throws Exception {
-//        int databaseSizeBeforeDelete = quoteRepository.findAll().size();
+//    void getQuotes(EntityManager em) throws Exception {
+//        int databaseSizeBefore = quoteRepository.findAll().size();
 //        ObjectMapper mapper = new ObjectMapper();
 //
 //        restQuoteMockMvc.perform(post("/quotes/requestQuotes")
@@ -271,7 +254,7 @@ public class QuoteResourceIT {
 //            .content(mapper.writeValueAsString(shipment)))
 //            .andExpect(status().isOk());
 //
-//        assertThat(quoteRepository.findAll().size()).isGreaterThan(databaseSizeBeforeDelete);
+//        assertThat(quoteRepository.findAll().size()).isGreaterThan(databaseSizeBefore);
 //
 //    }
 }

@@ -33,15 +33,15 @@ public class Shipment implements Serializable {
     @Column(name = "weight")
     private Float weight;
 
-    @OneToOne
+    @OneToOne(cascade = {CascadeType.ALL})
     @JoinColumn(unique = true)
     private Address destination;
 
-    @OneToOne
+    @OneToOne(cascade = {CascadeType.ALL})
     @JoinColumn(unique = true)
     private Address source;
 
-    @OneToMany(mappedBy = "shipment")
+    @OneToMany(mappedBy = "shipment", cascade = {CascadeType.ALL})
     private Set<Quote> quotes = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here

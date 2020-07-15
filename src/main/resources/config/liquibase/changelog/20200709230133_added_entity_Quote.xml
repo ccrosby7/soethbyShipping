@@ -6,7 +6,7 @@
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd
                         http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
-    
+
     <!--
         Added the entity Quote.
     -->
@@ -18,13 +18,16 @@
             <column name="provider" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
-            <column name="quote" type="${floatType}">
+            <column name="price" type="${floatType}">
                 <constraints nullable="true" />
             </column>
             <column name="duration" type="integer">
                 <constraints nullable="true" />
             </column>
             <column name="shipment_id" type="bigint">
+                <constraints nullable="true" />
+            </column>
+            <column name="persist" type="boolean">
                 <constraints nullable="true" />
             </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
