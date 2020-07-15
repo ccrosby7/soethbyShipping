@@ -4,8 +4,6 @@ This application was generated using JHipster 6.10.1, you can find documentation
 
 This is a "microservice" application intended to be part of a microservice architecture, please refer to the [Doing microservices with JHipster][] page of the documentation for more information.
 
-This application is configured for Service Discovery and Configuration with . On launch, it will refuse to start if it is not able to connect to .
-
 ## Development
 
 To start your application in the dev profile, run:
@@ -13,9 +11,54 @@ To start your application in the dev profile, run:
 ```
 ./gradlew
 ```
+or
+```
+Docker here
+```
 
-For further instructions on how to develop with JHipster, have a look at [Using JHipster in development][].
+##Usage
 
+```
+GET /api/quote/:id
+curl --request GET --url http://localhost:8081/api/quote/1
+```
+   Returns a single quote with id.
+```
+DELETE /api/quote/:id
+curl --request DELETE --url http://localhost:8081/api/quote/1
+```
+   Deletes quote with id.
+```
+PUT /api/quote/persist/:id
+curl --request PUT --url http://localhost:8081/api/quote/persist/1
+```
+   Persists quote with id.
+```
+POST /api/quote/requestQuotes?sortKey=<price|duration>
+  curl --request POST --url http://localhost:8081/api/quote/requestQuotes?sortKey=price
+        -d '{ "height": 5,
+              "length": 5,
+              "width": 5,
+              "weight": 5,
+              "origin": 
+                { "firstName": "zzz",
+                  "lastName": "zzz",
+                  "streetName": "zzz",
+                  "city": "zzz",
+                  "state": "zzz",
+                  "zip": 77777,
+               },
+              "destination": 
+                { "firstName": "zzz",
+                  "lastName": "zzz",
+                  "streetName": "zzz",
+                  "city": "zzz",
+                  "state": "zzz",
+                  "zip": 77777,
+               }
+            }'
+```
+   Sends a request to implemented endpoints, response is loaded into the database then returned to the user.
 ## Building for production
 
 ### Packaging as jar
@@ -23,19 +66,13 @@ For further instructions on how to develop with JHipster, have a look at [Using 
 To build the final jar and optimize the soethbyShipping application for production, run:
 
 ```
-
-
 ./gradlew -Pprod clean bootJar
-
 ```
 
 To ensure everything worked, run:
 
 ```
-
-
 java -jar build/libs/*.jar
-
 ```
 
 Refer to [Using JHipster in production][] for more details.
@@ -45,10 +82,7 @@ Refer to [Using JHipster in production][] for more details.
 To package your application as a war in order to deploy it to an application server, run:
 
 ```
-
-
 ./gradlew -Pprod -Pwar clean bootWar
-
 ```
 
 ## Testing

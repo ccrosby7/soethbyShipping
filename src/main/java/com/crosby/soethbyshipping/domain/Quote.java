@@ -133,7 +133,7 @@ public class Quote implements Serializable {
         return "Quote{" +
             "id=" + getId() +
             ", provider='" + getProvider() + "'" +
-            ", quote=" + getPrice() +
+            ", price=" + getPrice() +
             ", duration=" + getDuration() +
             "}";
     }

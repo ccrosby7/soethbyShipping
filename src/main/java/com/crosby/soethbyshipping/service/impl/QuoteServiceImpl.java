@@ -12,6 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -80,7 +82,7 @@ public class QuoteServiceImpl implements QuoteService {
             var trashQuotes = quoteToPersist.getShipment().getQuotes();
             trashQuotes.remove(quoteToPersist);
             trashQuotes.forEach(quote -> delete(quote.getId())); //trash unused quotes so the db doesn't get cluttered
-            quoteToPersist.setPersist(true); //flippable?
+            quoteToPersist.setPersist(true);
             quoteRepository.save(quoteToPersist);
             return true;
         }
@@ -98,13 +100,14 @@ public class QuoteServiceImpl implements QuoteService {
     }
 
     @Override
-    public List<Quote> getQuotesFromProviders(Shipment shipment){
+    public List<Quote> getQuotesFromProviders(Shipment shipment, Sort sort){
         var jsonUrls = shippingConfiguration.getJson();
         var xmlUrls = shippingConfiguration.getXML();
 
         var quotes = QuoteRequestUtil.requestQuotes(shipment, jsonUrls, ResponseFormat.JSON);
         quotes.addAll(QuoteRequestUtil.requestQuotes(shipment, xmlUrls, ResponseFormat.XML));
-        return quotes;
+        quoteRepository.saveAll(quotes);
+        return quoteRepository.findAll(Example.of(new Quote().shipment(shipment)), sort);
     }
 
 }

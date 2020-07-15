@@ -4,10 +4,10 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import com.crosby.soethbyshipping.web.rest.TestUtil;
 
-public class QuoteTest {
+class QuoteTest {
 
     @Test
-    public void equalsVerifier() throws Exception {
+    void equalsVerifier() throws Exception {
         TestUtil.equalsVerifier(Quote.class);
         Quote quote1 = new Quote();
         quote1.setId(1L);

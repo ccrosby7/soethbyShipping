@@ -2,6 +2,7 @@ package com.crosby.soethbyshipping.service;
 
 import com.crosby.soethbyshipping.domain.Quote;
 import com.crosby.soethbyshipping.domain.Shipment;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 import java.util.Optional;
@@ -46,5 +47,5 @@ public interface QuoteService {
 
     void deleteChain(Long id);
 
-    List<Quote> getQuotesFromProviders(Shipment shipment);
+    List<Quote> getQuotesFromProviders(Shipment shipment, Sort sort);
 }

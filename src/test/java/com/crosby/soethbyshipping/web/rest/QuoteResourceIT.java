@@ -37,7 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith({ RedisTestContainerExtension.class, MockitoExtension.class })
 @AutoConfigureMockMvc
 @WithMockUser
-public class QuoteResourceIT {
+class QuoteResourceIT {
 
     private static final Float DEFAULT_HEIGHT = 1F;
     private static final Float UPDATED_HEIGHT = 2F;
