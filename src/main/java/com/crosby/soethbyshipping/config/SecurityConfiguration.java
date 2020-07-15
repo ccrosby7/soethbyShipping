@@ -1,10 +1,9 @@
 package com.crosby.soethbyshipping.config;
 
-import com.crosby.soethbyshipping.security.*;
-import com.crosby.soethbyshipping.security.jwt.*;
-import org.springframework.context.annotation.Bean;
+import com.crosby.soethbyshipping.security.AuthoritiesConstants;
+import com.crosby.soethbyshipping.security.jwt.JWTConfigurer;
+import com.crosby.soethbyshipping.security.jwt.TokenProvider;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -56,7 +55,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         .and()
             .authorizeRequests()
             .antMatchers("/api/authenticate").permitAll()
-            .antMatchers("/api/**").authenticated()
+            .antMatchers("/api/**").permitAll()
             .antMatchers("/management/health").permitAll()
             .antMatchers("/management/info").permitAll()
             .antMatchers("/management/**").hasAuthority(AuthoritiesConstants.ADMIN)

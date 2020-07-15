@@ -30,11 +30,11 @@ plugins {
 group = "com.crosby.soethbyshipping"
 version = "0.0.1-SNAPSHOT"
 
-description = ""
+description = "Soethby shipping is a microservice application which queries various vendors for shipping quotes, allowing the user to book, unbook, or delete them at will."
 
-sourceCompatibility=1.8
-targetCompatibility=1.8
-assert System.properties["java.specification.version"] == "1.8" || "11" || "12" || "13" || "14"
+sourceCompatibility=11
+targetCompatibility=11
+assert System.properties["java.specification.version"] == "11" || "12" || "13" || "14"
 
 apply from: "gradle/docker.gradle"
 apply from: "gradle/sonar.gradle"
@@ -188,7 +188,7 @@ configurations {
         resolutionStrategy {
             // Inherited version from Spring Boot can't be used because of regressions:
             // To be removed as soon as spring-boot use the same version
-            force 'org.liquibase:liquibase-core:3.9.0'
+            force 'org.liquibase:liquibase-core:4.0.0'
         }
     }
 }
@@ -220,6 +220,7 @@ dependencies {
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-hibernate5"
     implementation "com.fasterxml.jackson.core:jackson-annotations"
     implementation "com.fasterxml.jackson.core:jackson-databind"
+    compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-xml', version: '2.11.1'
     implementation "org.redisson:redisson"
     implementation "javax.cache:cache-api"
     implementation "org.hibernate:hibernate-core"

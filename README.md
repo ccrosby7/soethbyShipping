@@ -1,21 +1,78 @@
 # soethbyShipping
+    
+    SoethbyShipping is a microservice application built to satisfy the requirements set forth in the interview document.
+    
+## How to Run
 
-This application was generated using JHipster 6.10.1, you can find documentation and help at [https://www.jhipster.tech/documentation-archive/v6.10.1](https://www.jhipster.tech/documentation-archive/v6.10.1).
-
-This is a "microservice" application intended to be part of a microservice architecture, please refer to the [Doing microservices with JHipster][] page of the documentation for more information.
-
-This application is configured for Service Discovery and Configuration with . On launch, it will refuse to start if it is not able to connect to .
-
-## Development
-
-To start your application in the dev profile, run:
+Check out the repository:
 
 ```
-./gradlew
+git clone https://github.com/ccrosby7/soethbyShipping.git
 ```
 
-For further instructions on how to develop with JHipster, have a look at [Using JHipster in development][].
+Change into the repository directory:
 
+```
+cd soethbyShipping
+```
+
+Run the following command to run locally in development:
+
+```
+ ./gradlew 
+```
+ To run inside a docker container:
+or
+```
+docker build . -t soethby-shipping
+docker run soethby-shipping
+```
+
+##Usage
+
+```
+GET /api/quote/:id
+curl --request GET --url http://localhost:8081/api/quote/1
+```
+   Returns a single quote with id.
+```
+DELETE /api/quote/:id
+curl --request DELETE --url http://localhost:8081/api/quote/1
+```
+   Deletes quote with id.
+```
+PUT /api/quote/persist/:id
+curl --request PUT --url http://localhost:8081/api/quote/persist/1
+```
+   Persists quote with id.
+```
+POST /api/quote/requestQuotes?sortKey=<price|duration>
+curl --location --request POST 'http://localhost:8081/api/quote/requestQuotes' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "height": "5.0",
+    "length": "5.0",
+    "width": "5.0",
+    "weight": "5.0",
+    "origin": {
+        "firstName": "zzz",
+        "lastName": "zzz",
+        "streetName": "zzz",
+        "city": "zzz",
+        "state": "zzz",
+        "zip": 77777
+    },
+    "destination": {
+        "firstName": "zzz",
+        "lastName": "zzz",
+        "streetName": "zzz",
+        "city": "zzz",
+        "state": "zzz",
+        "zip": 77777
+    }
+}'
+```
+   Sends a request to implemented endpoints, response is loaded into the database then returned to the user.
 ## Building for production
 
 ### Packaging as jar
@@ -23,19 +80,13 @@ For further instructions on how to develop with JHipster, have a look at [Using 
 To build the final jar and optimize the soethbyShipping application for production, run:
 
 ```
-
-
 ./gradlew -Pprod clean bootJar
-
 ```
 
 To ensure everything worked, run:
 
 ```
-
-
 java -jar build/libs/*.jar
-
 ```
 
 Refer to [Using JHipster in production][] for more details.
@@ -45,10 +96,7 @@ Refer to [Using JHipster in production][] for more details.
 To package your application as a war in order to deploy it to an application server, run:
 
 ```
-
-
 ./gradlew -Pprod -Pwar clean bootWar
-
 ```
 
 ## Testing
