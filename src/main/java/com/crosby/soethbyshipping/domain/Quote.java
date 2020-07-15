@@ -62,7 +62,7 @@ public class Quote implements Serializable {
         return price;
     }
 
-    public Quote quote(Float quote) {
+    public Quote price(Float quote) {
         this.price = quote;
         return this;
     }
@@ -133,9 +133,10 @@ public class Quote implements Serializable {
         return "Quote{" +
             "id=" + getId() +
             ", provider='" + getProvider() + "'" +
-            ", price=" + getPrice() +
+            ", quote=" + getPrice() +
             ", duration=" + getDuration() +
             "}";
     }
+
 
 }

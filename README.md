@@ -1,19 +1,30 @@
 # soethbyShipping
+    
+    SoethbyShipping is a microservice application built to satisfy the requirements set forth in the interview document.
+    
+## How to Run
 
-This application was generated using JHipster 6.10.1, you can find documentation and help at [https://www.jhipster.tech/documentation-archive/v6.10.1](https://www.jhipster.tech/documentation-archive/v6.10.1).
-
-This is a "microservice" application intended to be part of a microservice architecture, please refer to the [Doing microservices with JHipster][] page of the documentation for more information.
-
-## Development
-
-To start your application in the dev profile, run:
+Check out the repository:
 
 ```
-./gradlew
+git clone https://github.com/ccrosby7/soethbyShipping.git
 ```
+
+Change into the repository directory:
+
+```
+cd soethbyShipping
+```
+
+Run the following command to run locally in development:
+
+```
+ ./gradlew 
+```
+ To run inside a docker container:
 or
 ```
-Docker here
+
 ```
 
 ##Usage
@@ -35,7 +46,7 @@ curl --request PUT --url http://localhost:8081/api/quote/persist/1
    Persists quote with id.
 ```
 POST /api/quote/requestQuotes?sortKey=<price|duration>
-  curl --request POST --url http://localhost:8081/api/quote/requestQuotes?sortKey=price
+  curl --request POST --url http://localhost:8081/api/quote/requestQuotes?sortKey=price \
         -d '{ "height": 5,
               "length": 5,
               "width": 5,
@@ -46,7 +57,7 @@ POST /api/quote/requestQuotes?sortKey=<price|duration>
                   "streetName": "zzz",
                   "city": "zzz",
                   "state": "zzz",
-                  "zip": 77777,
+                  "zip": 77777
                },
               "destination": 
                 { "firstName": "zzz",

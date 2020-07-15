@@ -8,7 +8,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -26,7 +25,6 @@ import java.util.concurrent.TimeoutException;
 import static com.crosby.soethbyshipping.enums.ResponseFormat.JSON;
 import static com.crosby.soethbyshipping.enums.ResponseFormat.XML;
 
-@Component
 public class QuoteRequestUtil {
 
     private static final HttpClient httpClient = HttpClient.newBuilder()

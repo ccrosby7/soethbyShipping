@@ -91,7 +91,7 @@ public class QuoteResource {
 
 
     @PostMapping("/quote/requestQuotes")
-    public ResponseEntity<List<Quote>> getQuotes(@RequestBody Shipment shipment, @RequestParam(value="sortBy") String sortKey){
+    public ResponseEntity<List<Quote>> getQuotes(@RequestBody Shipment shipment, @RequestParam(value="sortBy", required = false) String sortKey){
         log.debug("REST request to get Quotes for shipment");
         shipmentService.save(shipment);
         return ResponseEntity.ok().body(quoteService.getQuotesFromProviders(shipment, Sort.by(Sort.DEFAULT_DIRECTION, sortKey)));

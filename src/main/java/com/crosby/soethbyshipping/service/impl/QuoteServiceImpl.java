@@ -16,6 +16,7 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -102,12 +103,15 @@ public class QuoteServiceImpl implements QuoteService {
     @Override
     public List<Quote> getQuotesFromProviders(Shipment shipment, Sort sort){
         var jsonUrls = shippingConfiguration.getJson();
-        var xmlUrls = shippingConfiguration.getXML();
+        var xmlUrls = shippingConfiguration.getXml();
 
         var quotes = QuoteRequestUtil.requestQuotes(shipment, jsonUrls, ResponseFormat.JSON);
         quotes.addAll(QuoteRequestUtil.requestQuotes(shipment, xmlUrls, ResponseFormat.XML));
         quoteRepository.saveAll(quotes);
-        return quoteRepository.findAll(Example.of(new Quote().shipment(shipment)), sort);
+        if(null == sort){
+            return quoteRepository.findAll(Example.of(new Quote().shipment(shipment)), sort);
+        }
+        return quoteRepository.findAll(Example.of(new Quote().shipment(shipment)));
     }
 
 }

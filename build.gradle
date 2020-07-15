@@ -30,7 +30,7 @@ plugins {
 group = "com.crosby.soethbyshipping"
 version = "0.0.1-SNAPSHOT"
 
-description = ""
+description = "Soethby shipping is a microservice application which queries various vendors for shipping quotes, allowing the user to book, unbook, or delete them at will."
 
 sourceCompatibility=11
 targetCompatibility=11

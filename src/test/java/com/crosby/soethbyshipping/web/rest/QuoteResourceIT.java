@@ -51,8 +51,8 @@ class QuoteResourceIT {
     private static final Float DEFAULT_WEIGHT = 1F;
     private static final Float UPDATED_WEIGHT = 2F;
 
-    private static final Float DEFAULT_QUOTE = 1F;
-    private static final Float UPDATED_QUOTE = 2F;
+    private static final Float DEFAULT_PRICE = 1F;
+    private static final Float UPDATED_PRICE = 2F;
 
     private static final Integer DEFAULT_DURATION_IN_DAYS = 1;
     private static final Integer UPDATED_DURATION_IN_DAYS = 2;
@@ -122,7 +122,7 @@ class QuoteResourceIT {
     public static Quote createQuote(Shipment shipment){
         Quote quote = new Quote()
             .shipment(shipment)
-            .quote(DEFAULT_QUOTE)
+            .price(DEFAULT_PRICE)
             .duration(DEFAULT_DURATION_IN_DAYS)
             .provider(DEFAULT_PROVIDER)
             .persist(DEFAULT_PERSIST);
@@ -158,7 +158,7 @@ class QuoteResourceIT {
     public static Quote createUpdatedQuote(Shipment shipment){
         Quote quote = new Quote()
             .shipment(shipment)
-            .quote(UPDATED_QUOTE)
+            .price(UPDATED_PRICE)
             .duration(UPDATED_DURATION_IN_DAYS)
             .provider(UPDATED_PROVIDER)
             .persist(UPDATED_PERSIST);
@@ -194,7 +194,7 @@ class QuoteResourceIT {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(quote.getId().intValue()))
             .andExpect(jsonPath("$.provider").value(DEFAULT_PROVIDER))
-            .andExpect(jsonPath("$.quote").value(DEFAULT_QUOTE.doubleValue()))
+            .andExpect(jsonPath("$.price").value(DEFAULT_PRICE.doubleValue()))
             .andExpect(jsonPath("$.duration").value(DEFAULT_DURATION_IN_DAYS));
 
     }
@@ -228,7 +228,6 @@ class QuoteResourceIT {
         // Initialize the database
         shipmentRepository.saveAndFlush(shipment);
 
-        List<Shipment> shipment1 = shipmentRepository.findAll();
         var quote = shipment.getQuotes().iterator().next();
 
         int databaseSizeBeforeDelete = quoteRepository.findAll().size();

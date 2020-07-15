@@ -68,14 +68,6 @@ public class ShipmentServiceImpl implements ShipmentService {
     @Override
     public void delete(Long id) {
         log.debug("Request to delete Shipment : {}", id);
-        Optional<Shipment> shipment = shipmentRepository.findById(id);
-        if(shipment.isPresent()){
-            Shipment shipmentToDelete = shipment.get();
-            Set<Quote> quotes = shipmentToDelete.getQuotes();
-            quotes.forEach(quote -> quoteService.delete(quote.getId()) ); //clean out all associated to a shipment
-            addressService.delete(shipmentToDelete.getDestination().getId());
-            addressService.delete(shipmentToDelete.getSource().getId());
-        }
         shipmentRepository.deleteById(id);
     }
 

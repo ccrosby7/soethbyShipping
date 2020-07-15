@@ -22,9 +22,9 @@ logging:
 shipping:
   providers:
     json:
-      UPS: "http://localhost:8080/"
+      - UPS: "http://localhost:8080/"
     xml:
-      FEDEX: "http://localhost:9090/"
+      - FEDEX: "http://localhost:9090/"
 
 spring:
   profiles:
