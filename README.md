@@ -24,7 +24,8 @@ Run the following command to run locally in development:
  To run inside a docker container:
 or
 ```
-
+docker build . -t soethby-shipping
+docker run soethby-shipping
 ```
 
 ##Usage
@@ -46,28 +47,30 @@ curl --request PUT --url http://localhost:8081/api/quote/persist/1
    Persists quote with id.
 ```
 POST /api/quote/requestQuotes?sortKey=<price|duration>
-  curl --request POST --url http://localhost:8081/api/quote/requestQuotes?sortKey=price \
-        -d '{ "height": 5,
-              "length": 5,
-              "width": 5,
-              "weight": 5,
-              "origin": 
-                { "firstName": "zzz",
-                  "lastName": "zzz",
-                  "streetName": "zzz",
-                  "city": "zzz",
-                  "state": "zzz",
-                  "zip": 77777
-               },
-              "destination": 
-                { "firstName": "zzz",
-                  "lastName": "zzz",
-                  "streetName": "zzz",
-                  "city": "zzz",
-                  "state": "zzz",
-                  "zip": 77777,
-               }
-            }'
+curl --location --request POST 'http://localhost:8081/api/quote/requestQuotes' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "height": "5.0",
+    "length": "5.0",
+    "width": "5.0",
+    "weight": "5.0",
+    "origin": {
+        "firstName": "zzz",
+        "lastName": "zzz",
+        "streetName": "zzz",
+        "city": "zzz",
+        "state": "zzz",
+        "zip": 77777
+    },
+    "destination": {
+        "firstName": "zzz",
+        "lastName": "zzz",
+        "streetName": "zzz",
+        "city": "zzz",
+        "state": "zzz",
+        "zip": 77777
+    }
+}'
 ```
    Sends a request to implemented endpoints, response is loaded into the database then returned to the user.
 ## Building for production
