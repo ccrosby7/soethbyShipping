@@ -9,6 +9,7 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -17,10 +18,6 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import static com.crosby.soethbyshipping.enums.ResponseFormat.JSON;
 import static com.crosby.soethbyshipping.enums.ResponseFormat.XML;
@@ -42,6 +39,9 @@ public class QuoteRequestUtil {
     public static List<Quote> requestQuotes(Shipment shipment, Map<String, String> urls, ResponseFormat format) {
         //could retrieve url from config here, but easier to split by protocol or only send a single provider
         ObjectMapper mapper;
+        String body;
+        var wrapper = new Object() { List<Quote> fullResponse; };
+
         if(JSON.equals(format)){
             mapper = jsonMapper;
         } else if(XML.equals(format)){
@@ -50,36 +50,36 @@ public class QuoteRequestUtil {
             return Collections.emptyList();
         }
         try {
-            final String body = mapper.writeValueAsString(shipment);
-            var wrapper = new Object() {
-                List<Quote> fullResponse;
-            };
-             urls.forEach( (provider, url) -> {
-                 CompletableFuture<HttpResponse<String>> response = httpRequest(body, url);
-                 String result;
-                 try {
-                     result = response.thenApply(HttpResponse::body).get(5, TimeUnit.SECONDS);
-                     wrapper.fullResponse.add(mapper.readValue(result, Quote.class));
-                     //messy, but puts each quote into an object for saving
-                 } catch (ExecutionException | TimeoutException | JsonProcessingException | InterruptedException e) {
-                     log.error(e.getMessage()); //move all this??
-                 }
-             });
-             return wrapper.fullResponse;
-
+             body = mapper.writeValueAsString(shipment);
         } catch (JsonProcessingException e) {
             log.error(e.getMessage());
+            return Collections.emptyList();
         }
-        return Collections.emptyList();
+        urls.forEach( (provider, url) -> {
+            HttpResponse<String> response = httpRequest(body, url);
+            try {
+                wrapper.fullResponse.add(mapper.readValue(response.body(), Quote.class));
+                //messy, but puts each quote into an object for saving
+            } catch (JsonProcessingException e) {
+                log.error(e.getMessage());
+            }
+        });
+        return wrapper.fullResponse;
     }
 
-    private static CompletableFuture<HttpResponse<String>> httpRequest(String body, String url){
+    private static HttpResponse<String> httpRequest(String body, String url){
 
         HttpRequest request = HttpRequest.newBuilder()
             .POST(HttpRequest.BodyPublishers.ofString(body))
             .uri(URI.create(url))
             .build();
-        return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString());
-
+        try {
+            return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (IOException e) {
+            log.error(e.getMessage());
+        } catch (InterruptedException e) {
+            log.error(e.getMessage());
+        }
+        return null;
     }
 }

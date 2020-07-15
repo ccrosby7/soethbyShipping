@@ -91,9 +91,13 @@ public class QuoteResource {
 
 
     @PostMapping("/quote/requestQuotes")
-    public ResponseEntity<List<Quote>> getQuotes(@RequestBody Shipment shipment, @RequestParam(value="sortBy", required = false) String sortKey){
+    public ResponseEntity<List<Quote>> getQuotes(@RequestBody Shipment shipment, @RequestParam(value="sortBy", required = false, defaultValue = "") String sortKey){
         log.debug("REST request to get Quotes for shipment");
         shipmentService.save(shipment);
-        return ResponseEntity.ok().body(quoteService.getQuotesFromProviders(shipment, Sort.by(Sort.DEFAULT_DIRECTION, sortKey)));
+        if(sortKey.isEmpty()){
+            return ResponseEntity.ok().body(quoteService.getQuotesFromProviders(shipment, null));
+        }
+        var sort = Sort.by(Sort.DEFAULT_DIRECTION, sortKey);
+        return ResponseEntity.ok().body(quoteService.getQuotesFromProviders(shipment, sort));
     }
 }
